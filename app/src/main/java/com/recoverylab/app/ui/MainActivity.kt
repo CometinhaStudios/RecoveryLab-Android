@@ -2,6 +2,10 @@ package com.recoverylab.app.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +22,12 @@ class MainActivity : ComponentActivity() {
         refreshTrigger++
     }
     private var refreshTrigger by mutableStateOf(0)
+
+    override fun onResume() {
+        super.onResume()
+        // Recheck after returning from Shizuku settings/notification so stale state is not kept.
+        refreshTrigger++
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +68,12 @@ fun HomeScreen(refreshKey: Int, onRequestShizuku: () -> Unit) {
                 Text("Status do Shizuku", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))
                 Text(ShizukuManager.describeState(shizukuState))
+                Spacer(Modifier.height(8.dp))
                 if (shizukuState is ShizukuManager.ShizukuState.AvailableNoPermission) {
-                    Spacer(Modifier.height(8.dp))
                     Button(onClick = onRequestShizuku) { Text("Autorizar Shizuku") }
+                }
+                OutlinedButton(onClick = { /* state is refreshed by Activity lifecycle */ }) {
+                    Text("Status atualizado ao voltar para o app")
                 }
             }
         }
