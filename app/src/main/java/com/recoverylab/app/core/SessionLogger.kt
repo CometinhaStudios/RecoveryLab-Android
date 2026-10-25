@@ -23,10 +23,13 @@ object SessionLogger {
 
     fun log(message: String, level: Level = Level.INFO) {
         val line = "${timeFormat.format(Date())} [${level.name}] $message"
-        when (level) {
-            Level.INFO -> Log.i(TAG, message)
-            Level.WARN -> Log.w(TAG, message)
-            Level.ERROR -> Log.e(TAG, message)
+        // android.util.Log é um stub nos testes JVM locais; o logger em arquivo deve continuar seguro.
+        runCatching {
+            when (level) {
+                Level.INFO -> Log.i(TAG, message)
+                Level.WARN -> Log.w(TAG, message)
+                Level.ERROR -> Log.e(TAG, message)
+            }
         }
         runCatching { if (::logFile.isInitialized) logFile.appendText(line + "\n") }
     }
@@ -36,6 +39,6 @@ object SessionLogger {
         log("Arquivo '$fileName': $status — $reason", if (validated) Level.INFO else Level.WARN)
     }
 
-    fun readLog(): String = runCatching { logFile.readText() }.getOrDefault("")
+    fun readLog(): String = runCatching { if (::logFile.isInitialized) logFile.readText() else "" }.getOrDefault("")
     enum class Level { INFO, WARN, ERROR }
 }
