@@ -2,10 +2,6 @@ package com.recoverylab.app.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.launch
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -71,9 +67,6 @@ fun HomeScreen(refreshKey: Int, onRequestShizuku: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 if (shizukuState is ShizukuManager.ShizukuState.AvailableNoPermission) {
                     Button(onClick = onRequestShizuku) { Text("Autorizar Shizuku") }
-                }
-                OutlinedButton(onClick = { /* state is refreshed by Activity lifecycle */ }) {
-                    Text("Status atualizado ao voltar para o app")
                 }
             }
         }
