@@ -25,19 +25,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Gradle 8.7
+      - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
+
+      - name: Gerar Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.7
+
+      - name: Conceder permissão de execução ao gradlew
+        run: chmod +x ./gradlew
 
       - name: Lint
-        run: gradle lintDebug --stacktrace
+        run: ./gradlew lintDebug --stacktrace
 
       - name: Testes unitários
-        run: gradle testDebugUnitTest --stacktrace
+        run: ./gradlew testDebugUnitTest --stacktrace
 
       - name: Compilar APK debug
-        run: gradle assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Publicar APK como artifact
         uses: actions/upload-artifact@v4
